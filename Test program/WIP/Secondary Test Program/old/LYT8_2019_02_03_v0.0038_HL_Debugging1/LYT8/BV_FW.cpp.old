@@ -1,0 +1,294 @@
+//==============================================================================
+// BV_FW.cpp (User function)
+// 
+//    void BV_FW_user_init(test_function& func)
+//    void BV_FW(test_function& func)
+//
+//==============================================================================
+
+#include "asl.h"
+// Disable warning C4244 "conversion from 'const double' to 'float', possible loss of data"
+#pragma warning (disable : 4244)
+#pragma warning (disable : 4305)
+
+#include "BV_FW.h"
+
+// !!!! User #includes and externs can be placed between the comments
+// !!!!
+
+// *************************************************************************
+
+void BV_FW_user_init(test_function& func)
+{
+	BV_FW_params *ours;
+    ours = (BV_FW_params *)func.params;
+
+// !!!! User initialization code below this comment (do not remove comment)
+
+// !!!! User initialization code above this comment (do not remove comment)
+}
+
+// *************************************************************************
+
+void BV_FW(test_function& func)
+{
+    // The two lines below must be the first two in the function.
+    BV_FW_params *ours;
+    ours = (BV_FW_params *)func.params;
+
+	// Increment function number //
+	gFuncNum++;	
+/*
+	// Datalog gFuncNum variable //
+	if(gDisplay_FuncNum)
+		PiDatalog(func, A_Func_Num_BV_FW, gFuncNum, 10, POWER_UNIT);
+
+	//Skip Test if AbortTest set 
+	if (AbortTest)
+		return;
+
+	if (g_Fn_BV_FW == 0 )  return;
+
+	// Test Time Begin //
+	 if (g_p_TstTime_Enble)
+	 	g_begintime = g_mytimer.GetElapsedTime();
+
+	double ifrc_FW_str =0;
+	double ifrc_FW =0;
+	float vfrc_FW =0;
+	float vfrc_FW_REL =0;
+	float bvdss_FW_str1 =0;
+	float bvdss_FW_str2 =0;
+	//float BVDSS_FW_ISTR =0;
+	//float BVDSS_FW_STR =0;
+	//float BVDSS_FW_WALK =0;
+	float BVD_FW_100UA =0;
+	float IDS_FW_100UA =0;
+	float ifrc_FW_lo = 0;
+	float vfrc_FW_lo = 0;
+	float BVD_FW_200UA = 0;
+	float IDS_FW_200UA = 0;
+	float Imeas =0.0;
+	float vfrc_init = 0;
+	float BV_FW_TT = 0;
+
+	Pulse pulse(PULSE_RISING_EDGE,10e-6); // external trigger pulse from dvi for debug
+
+	// Instrument protection
+	ovi_1->disconnect(0);
+	ovi_1->disconnect(1);
+	ovi_1->disconnect(2);
+	ovi_1->disconnect(3);
+	ovi_1->disconnect(4);
+	ovi_1->disconnect(5);
+	ovi_1->disconnect(6);
+	ovi_1->disconnect(7);
+	ovi_3->disconnect(0);
+	Mux20_Close_relay(K37);
+	ovi_3->disconnect(1);
+	Mux20_Close_relay(K39);
+	ovi_3->disconnect(2);
+	Mux20_Close_relay(K41);
+	ovi_3->disconnect(3);
+	ovi_3->disconnect(4);
+	Mux20_Open_relay(K48);
+	ovi_3->disconnect(5);  // Already disconnected //
+	Mux20_Open_relay(K45);
+	ovi_3->disconnect(6);
+	ovi_3->disconnect(7);
+	Mux20_Open_relay(K64);
+	tmu_6->open_relay(TMU_HIZ_DUT1); // protect TMU
+	tmu_6->open_relay(TMU_HIZ_DUT2); // protect TMU
+	tmu_6->open_relay(TMU_HIZ_DUT3); // protect TMU
+	tmu_6->open_relay(TMU_HIZ_DUT4); // protect TMU
+	tmu_6->open_relay(TMU_CHAN_A_DUT1); // protect TMU
+	tmu_6->open_relay(TMU_CHAN_A_DUT2); // protect TMU
+	tmu_6->open_relay(TMU_CHAN_B_DUT1); // protect TMU
+	tmu_6->open_relay(TMU_CHAN_B_DUT2); // protect TMU
+	//ddd_7->ddd_disconnect_drivers();
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+// 						150V Device on FW pin BVD							
+//  NOTE1: FW BVD leakage needs to be measured outside of test mode. The only 
+//         way to power up the device outside of test mode is to provide 3    
+//         negative pulses to FW pin during and after BPS power up.			 
+//  NOTE2: FB has to be above FB threahold for the power up to happen properly
+//         After the power up. FB is either connected to the OVI or DDD thru  
+//         LB relay. Leave FB pin connected to OVI and disconnect OVI channel 
+//         from the instrument to avoid high voltage glitch to damge OVI even 
+//         though the voltage is only 150V.									 
+//         Disconnect DDD from FW pin for the same purpose. 					 
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+
+	// Power down HVS before connecting it to FW pin
+	hvs_15->set_current(1e-6,		RANGE_1_MA);							
+	hvs_15->set_voltage(0.01,		RANGE_1_KV);	
+	delay(2);
+	BPP_DVI->set_voltage(BPP_ch, 0.0, 		VOLT_10_RANGE); 	// DVI_11_0 
+	//Close_relay(K4);			// Connect HVS to 47k resistor
+	//delay(3);				
+
+	// FW 150V device stress condition
+	// If we go above ~170V, device will snap back to turn on SCR ESD based on Randy's input
+//	ifrc_FW = 200.0e-6;		
+//	vfrc_FW = 200;
+//	ifrc_FW_lo = 100.0e-6;		
+//	vfrc_FW_lo = 160;
+	ifrc_FW = 200.0e-6;		
+	vfrc_FW = 160; // Change per Robert technology 7/19/2018 //
+
+	// Need to be out of test mode in order to read anti-fuses. 
+	//Power_Up_Secondary(Normal_Mode_S, 5.4);	// vBPS set to Vshunt-100mV first then set to 4.8V to avoid charging path stays on
+											// for devices with vBPS_vPlus > 4.8V for characterization
+
+	// Connect dvi to FW pin to prevent HVS from glitching FW pin below GND during connection. //
+//	Close_relay(K18); 
+//	FW_dvi->set_voltage(FW_ch, 0, VOLT_10_RANGE); // DVI_11_1 //
+//	FW_dvi->set_current(FW_ch, 30e-3, RANGE_30_MA); // DVI_11_1 //
+//	wait.delay_10_us(300);
+
+	// Powerup secondary //
+	Power_Up_Secondary(Normal_Mode_S, 4.87); // Vshunt lower for new silicon //	
+
+	// Connect HVS //
+	FB_ovi->set_voltage(FB_ch, 0.0, RANGE_2_V);	// OVI_1_2
+	wait.delay_10_us(10);
+	Open_relay(K21); // Disconnect FW pin to DDD
+	ovi_1->disconnect(FB_ch); // Disconnect OVI on FB pin to avoid damage
+	delay(1);
+	hvs_15->set_meas_mode(HVS_MEASURE_CURRENT); // HVS commands takes about 1ms per instruction.
+	hvs_15->close_relay(HVS_NEG_FORCE); // NEG_FORCE (J6,B3) hardwired to gnd 
+	hvs_15->close_relay(HVS_SHORT_NEG_FS);	
+	hvs_15->close_relay(HVS_GND_NEG_SENSE);	
+	hvs_15->close_relay(HVS_SHORT_POS_FS);
+	hvs_15->close_relay(HVS_FORCE_POS); // POS_FORCE (J6,B9) to drain	
+	Close_relay(K5);		
+	//wait.delay_10_us(300);
+
+	// Set HVS to 0.5V to prevent initial undershoot below GND. //
+	hvs_15->set_current(ifrc_FW, RANGE_1_MA);							
+	hvs_15->set_voltage(0.5, RANGE_200_V);	
+	//wait.delay_10_us(1000);
+	wait.delay_10_us(400);
+
+	Close_relay(K4); // Connect HVS to 47k resistor
+	wait.delay_10_us(300);		
+
+	// Disconnect dvi from FW pin. //
+//	Open_relay(K18);
+//	wait.delay_10_us(300);
+
+	//==============================200V Testing=================================================//
+	//There is a 200V JFET and a 170V ESD diode on this pin. Per technology the BV is limited by the
+	//170V ESD diode. Randy suggest that we raise the voltage to 200V(above the regular 170V) so as to catch
+	//any defects on the 170V ESD diode. Per Technology - the pin can handle a few hunderd uA of current - FS032017
+	
+	// Ramp up //
+	vfrc_init = 100;
+	hvs_15->set_current(ifrc_FW, RANGE_1_MA);	
+	hvs_15->set_voltage(vfrc_init, RANGE_200_V);
+	wait.delay_10_us(100);
+	while (vfrc_init < vfrc_FW)
+	{
+		hvs_15->set_voltage(vfrc_init, RANGE_200_V);
+		vfrc_init = vfrc_init + 10;
+	}
+	hvs_15->set_voltage(vfrc_FW, RANGE_200_V);
+	hvs_15->set_meas_mode(HVS_MEASURE_CURRENT);
+	delay(15);	
+	Imeas = hvs_15->measure_average(5); // measure avalanche current
+	hvs_15->set_meas_mode(HVS_MEASURE_VOLTAGE); 
+	delay(5);
+	// BVD_200UA
+	BVD_FW_200UA = hvs_15->measure_average(5);
+	BVD_FW_200UA -= Imeas * 47e3; // subtract 47k vdrop 47.3ms
+	//IDS_FW_200UA = Imeas;
+
+	hvs_15->set_voltage(BVD_FW_200UA-10, RANGE_200_V); //Need to back up 10V from BV to measure leakage
+	wait.delay_10_us(50);
+	hvs_15->set_meas_mode(HVS_MEASURE_CURRENT);
+	wait.delay_10_us(800);
+	IDS_FW_200UA = hvs_15->measure_average(5); // measure leakage current
+
+	//==========================================================================================//
+
+
+
+	// Power down and disconnect relays; BPP was powered down before FW BVD tests
+	hvs_15->set_voltage(50, RANGE_200_V); // Ramp down, prevent undershoot //
+	wait.delay_10_us(10); // Ramp down, prevent undershoot //
+	hvs_15->set_voltage(20, RANGE_200_V); // Ramp down, prevent undershoot //
+	wait.delay_10_us(10); // Ramp down, prevent undershoot //
+	hvs_15->set_voltage(10, RANGE_200_V); // Ramp down, prevent undershoot //
+	wait.delay_10_us(10); // Ramp down, prevent undershoot //
+	hvs_15->set_voltage(5, RANGE_200_V); // Ramp down, prevent undershoot //
+	wait.delay_10_us(10); // Ramp down, prevent undershoot //
+	hvs_15->set_voltage(2, RANGE_200_V); // Ramp down, prevent undershoot //
+	wait.delay_10_us(10); // Ramp down, prevent undershoot //
+	hvs_15->set_voltage(1, RANGE_200_V); // Ramp down, prevent undershoot //
+	wait.delay_10_us(10); // Ramp down, prevent undershoot //
+	hvs_15->set_voltage(0, RANGE_200_V); // Ramp down, prevent undershoot //
+	wait.delay_10_us(10); // Ramp down, prevent undershoot //
+	BPS_dvi->set_voltage(BPS_ch, 0.0, VOLT_10_RANGE); 	
+	VO_dvi->set_voltage(VO_ch, 0, VOLT_5_RANGE);
+	ovi_1->connect(0);
+	ovi_1->connect(1);
+	ovi_1->connect(2);
+	ovi_1->connect(3);
+	ovi_1->connect(4);
+	ovi_1->connect(5);
+	ovi_1->connect(6);
+	ovi_1->connect(7);
+	ovi_3->connect(0);
+	ovi_3->connect(1);
+	ovi_3->connect(2);
+	ovi_3->connect(3);
+	ovi_3->connect(4);
+	//ovi_3->connect(5); // Keep disconnected //
+	ovi_3->connect(6);
+	ovi_3->connect(7);
+	Open_relay(K4); // Disconnect HVS
+	Open_relay(K11); // Disconnect BPP from DVI
+	Open_relay(K5); // Disconnect HVS from FW pin
+	Open_relay(K18); // Disconnect FW from DVI-11-1
+	hvs_15->open_relay(HVS_NEG_FORCE); // NEG_FORCE (J6,B3)  hardwired to gnd 
+	hvs_15->open_relay(HVS_SHORT_NEG_FS);	
+	hvs_15->open_relay(HVS_GND_NEG_SENSE);	
+	hvs_15->open_relay(HVS_SHORT_POS_FS);
+	hvs_15->open_relay(HVS_FORCE_POS); // POS_FORCE (J6,B9) to drain
+	dvi_13->open_relay(BUS_SENSE1);
+	dvi_13->open_relay(BUS_FORCE1);
+	mux_14->open_relay(MUX_3_BUS3);
+	SR_dvi2k->set_voltage(SR_ch, 3, VOLT_10_RANGE); // DVI_13_1, dvi2k, prevent undershoot //
+	SR_dvi2k->set_current(SR_ch, 20.0e-3, RANGE_20_MA); // DVI_13_1, dvi2k //
+	wait.delay_10_us(45); // prevent SR undershoot //
+	SR_dvi2k->set_voltage(SR_ch, 0.0, VOLT_10_RANGE); // DVI_13_1, dvi2k //
+	//SR_dvi2k->set_voltage(SR_ch, 0.0, VOLT_10_RANGE); // DVI_13_1, dvi2k //
+	//SR_dvi2k->set_current(SR_ch, 20.0e-3, RANGE_20_MA); // DVI_13_1, dvi2k //
+	wait.delay_10_us(200);
+	hvs_15->init();	
+	//ddd_7->ddd_connect_drivers();
+
+	// Datalog
+	//////////PiDatalog(func, A_BVDSS_FW_STR,		BVDSS_FW_STR,	10,		POWER_UNIT);		
+	//PiDatalog(func, A_BV_FW_200UA, BVD_FW_200UA, 10, POWER_UNIT); // DEBUG ONLY!!! Change to bin5 for engineering. //
+	PiDatalog(func, A_BV_FW_200UA, BVD_FW_200UA, 5, POWER_UNIT); // DEBUG ONLY!!! Change to bin5 for engineering. //
+	PiDatalog(func, A_IDS_FW_200UA, IDS_FW_200UA, 10, POWER_MICRO);		
+	//PiDatalog(func, A_BV_FW_100UA, BVD_FW_100UA, 10, POWER_UNIT);		
+	//PiDatalog(func, A_IDS_FW_100UA, IDS_FW_100UA, 10, POWER_MICRO);
+
+	// Test Time End //
+	if (g_p_TstTime_Enble)
+	{
+		g_endtime = g_mytimer.GetElapsedTime();
+		BV_FW_TT = (g_endtime - g_begintime)*1e-6;
+		PiDatalog(func, A_BV_FW_TT, BV_FW_TT, 10, POWER_MILLI);
+	}
+
+	// Check any test failed //
+	if (PiGetAnyFailStatus())		
+	{
+		g_PartFailed = 1;
+	}
+*/
+
+}

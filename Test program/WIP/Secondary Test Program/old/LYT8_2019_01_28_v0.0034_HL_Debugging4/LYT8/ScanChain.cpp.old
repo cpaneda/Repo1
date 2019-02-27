@@ -1,0 +1,431 @@
+//==============================================================================
+// ScanChain.cpp (User function)
+// 
+//    void ScanChain_user_init(test_function& func)
+//    void ScanChain(test_function& func)
+//
+//==============================================================================
+
+#include "asl.h"
+// Disable warning C4244 "conversion from 'const double' to 'float', possible loss of data"
+#pragma warning (disable : 4244)
+#pragma warning (disable : 4305)
+
+#include "ScanChain.h"
+
+// !!!! User #includes and externs can be placed between the comments
+
+
+// !!!!
+
+// *************************************************************************
+
+void ScanChain_user_init(test_function& func)
+{
+	ScanChain_params *ours;
+    ours = (ScanChain_params *)func.params;
+
+// !!!! User initialization code below this comment (do not remove comment)
+
+// !!!! User initialization code above this comment (do not remove comment)
+}
+
+// *************************************************************************
+
+void ScanChain(test_function& func)
+{
+    // The two lines below must be the first two in the function.
+    ScanChain_params *ours;
+    ours = (ScanChain_params *)func.params;
+	
+	// Increment function number //
+	gFuncNum++;
+
+	//////// Datalog gFuncNum variable //
+	//////if(gDisplay_FuncNum)
+	//////	PiDatalog(func, A_fNum_ScanChain, gFuncNum, 23, POWER_UNIT);
+	//////
+	//////if (g_Enable_ScanChain)
+	//////{
+	//////	// Skip Test if AbortTest set //
+	//////	if (AbortTest)
+	//////		return;
+
+	//////	if (g_Fn_ScanChain == 0 )  return;
+
+	//////	// Test Time Begin //
+	//////	if (g_p_TstTime_Enble)
+	//////		g_begintime = g_mytimer.GetElapsedTime();
+
+	//////	float ScanChain_TT = 0;
+	//////	
+	//////	// Declare Variables //
+	//////	int NObin[1] = {0}; // Place holder //
+	//////	int NOhex = 0; // Place holder //
+	//////	int WordArray[16] = {0};
+	//////	int TempArray[30] = {0};
+	//////	float WordData = 0;
+	//////	float UpperLimit = 0;
+	//////	float LowerLimit = 0;
+	//////	float Vforce = 0;
+	//////	float SRpinVolt = 0;
+	//////	Pulse pulse(PULSE_RISING_EDGE, 10e-6);
+	//////	int g_Fail_address = 99;//dont put 0 since 0 means a pass.
+
+	//////	//DSM
+	//////	int ret = -1,
+	//////		WatchDog_error = -1,
+	//////		TM_PW_error = -1,
+	//////		TM_Enter_error = -1,
+	//////		SR_Enable_error = -1,
+	//////		Scan_Enable_error = -1,
+	//////		TM_Enter_Failed = 1,
+	//////		count = 0;
+
+	//////	uint8_t writeDataBuffer[10];
+	//////	uint16_t devAddr = 0x00;
+
+	//////	// Set DSM clock frequency //
+	//////	DSM_set_vector_clock_freq(DSM_CONTEXT, 15000); // Freq in kHZ, 15000/4 = 3750kHz clock frequency //
+
+	//////	// Initialize Variables //
+	//////	g_Fail_address = 99;//dont put 0 since 0 means a pass.
+	//////	TM_Enter_Failed = 1;
+	//////	count = 0;
+
+	//////	// Open all relays //
+	//////	Initialize_Relays();
+
+	//////	// Initialize Instruments //
+	//////	Initialize_Instruments();
+
+	//////	// Set RDSON buffer clamp to 5V to be sure diode DB1 (in loadboard schematic) does not turn on. //
+	//////	BC_ovi->set_voltage(BC_ch, 5, RANGE_10_V); // OVI_1_3 //
+	//////	BC_ovi->set_current(BC_ch, 30e-3, RANGE_30_MA); // OVI_1_3 //
+
+	//////	// Drain //
+	//////	Close_relay(K2);
+	//////	D_dvi->set_voltage(D_ch, 0, VOLT_50_RANGE); // DVI_11_0 //
+	//////	D_dvi->set_current(D_ch, 30e-3, RANGE_30_MA); // DVI_11_0 //
+
+	//////	// BPP //
+	//////	BPP_ovi->set_voltage(BPP_ch, 0.0, RANGE_10_V); // OVI_1_0 //
+	//////	BPP_ovi->set_current(BPP_ch, 30e-3, RANGE_30_MA); // OVI_1_0 //
+
+	//////	// V pin //
+	//////	VPIN_ovi->set_voltage(VPIN_ch, 0.0, RANGE_10_V); // OVI_1_1 //
+	//////	VPIN_ovi->set_current(VPIN_ch, 30e-3, RANGE_30_MA); // OVI_1_1 //
+
+	//////	// FW //
+	//////	Close_relay(K18);
+	//////	FW_dvi->set_voltage(FW_ch, 1, VOLT_10_RANGE); // DVI_11_1 //
+	//////	FW_dvi->set_current(FW_ch, 30e-3, RANGE_30_MA); // DVI_11_1 //
+
+	//////	// SR //
+	//////	SR_dvi2k->set_voltage(SR_ch, 0.0, VOLT_10_RANGE); // DVI_13_1, dvi2k //
+	//////	SR_dvi2k->set_current(SR_ch, 20.0e-3, RANGE_20_MA); // DVI_13_1, dvi2k //
+
+	//////	// BPS //
+	//////	BPS_dvi->set_current(BPS_ch, 300e-3, RANGE_300_MA); // DVI_9_1 //
+	//////	BPS_dvi->set_voltage(BPS_ch, gVBPS_M_Init - 200e-3, VOLT_10_RANGE); // DVI_9_1 //
+	//////	//BPS_dvi->set_voltage(BPS_ch, 3.82 - 200e-3, VOLT_10_RANGE); // DVI_9_1 // Hardcode this value. Discuss with Dan; FS 04/20/17
+	//////	//BPS_dvi->set_current(BPS_ch, 30e-3, RANGE_30_MA); // DVI_9_1 //
+
+	//////	// IS //
+	//////	IS_dvi2k->set_voltage(IS_ch, 0.0, VOLT_1_RANGE); // DVI_13_0, dvi2k //
+	//////	IS_dvi2k->set_current(IS_ch, 20.0e-3, RANGE_20_MA); // DVI_13_0, dvi2k //
+
+	//////	// Vout //
+	//////	VO_dvi->set_voltage(VO_ch, 5.5, VOLT_10_RANGE); // DVI_9_0 //
+	//////	VO_dvi->set_current(VO_ch, 300e-3, RANGE_300_MA); // DVI_9_0 //
+
+	//////	// COMP //
+	//////	FB_ovi->disconnect(2);
+
+	//////	// VBD //
+	//////	VBD_dvi->set_voltage(VBD_ch, 0.0, VOLT_5_RANGE); // DVI_21_0 //
+	//////	VBD_dvi->set_current(VBD_ch, 30e-6, RANGE_30_UA); // DVI_21_0, prevent glitch //
+	//////	wait.delay_10_us(25); // Prevent glitch //
+	//////	VBD_dvi->set_current(VBD_ch, 0.1e-9, RANGE_30_UA); // DVI_21_0, Float //
+
+	//////	// uVCC //
+	//////	uVCC_ovi->set_voltage(uVCC_ch, 0.0, RANGE_5_V); // OVI_3_2 //
+	//////	uVCC_ovi->set_current(uVCC_ch, 0.1e-9, RANGE_30_UA); // OVI_3_2, Float //
+
+	//////	// DDD level //
+	//////	wait.delay_10_us(g_DDDwait);
+	//////	ddd_7->ddd_set_lo_level(0.0); // Will immediately change to this level upon execution 
+	//////	wait.delay_10_us(g_DDDwait);
+	//////	ddd_7->ddd_set_hi_level(3.3); // Will immediately change to this level upon execution
+	//////	wait.delay_10_us(g_DDDwait);
+
+	//////	// SDA //
+	//////	Mux20_Close_relay(K64); // SDA pullup to 3.3V through 1.5kohm resistor. //
+	//////	ovi_3->set_voltage(OVI_CHANNEL_7, g_I2C_Pullup, RANGE_5_V); // OVI_3_7 //
+	//////	ovi_3->set_current(OVI_CHANNEL_7, 30e-3, RANGE_30_MA); // OVI_3_7 //
+	//////	Mux20_Close_relay(K37); // Disconnect ovi from SDA. //
+	//////	Mux20_Close_relay(K38); // Connect SDA and SCL to DDD. //
+	//////	Mux20_Close_relay(K40); // Connect SDA and SCL to DDD. //
+
+	//////	// SCL //
+	//////	Mux20_Close_relay(K39); // Disconnect ovi from SCL. //
+	//////	ddd_7->ddd_run_pattern(g_SDA_SCL_Low_start, g_SDA_SCL_Low_stop);  // Start with SDA and SCL low with DDD. //
+	//////	
+	//////	// Set DDD for I2C. //
+	//////	ddd_7->ddd_set_clock_period(g_Dclk_I2C);
+	//////	ddd_7->ddd_set_voltage_ref(g_Vref_I2C);
+	//////		
+	//////	// Wait for relays //
+	//////	wait.delay_10_us(200); 
+
+	//////	// Powerup //
+	//////	BPS_dvi->set_voltage(BPS_ch, gVBPS_final, VOLT_10_RANGE); // DVI_9_1 //
+	//////	wait.delay_10_us(100); // Must wait long enough for uVCC to come up before sending I2C commands. //
+	//////	//BPS_dvi->set_voltage(BPS_ch, 4.5, VOLT_10_RANGE); // DVI_9_1 //Hardcode this value. Discuss with Dan; FS 04/20/17
+	//////	//wait.delay_10_us(100); // Must wait long enough for uVCC to come up before sending I2C commands. //
+
+	//////	if(!g_DSM)
+	//////	{
+	//////		// I2C into test mode. //  
+	//////		Write_Word(g_TM_EN, g_TestMode_Password, NObin, HEX); // Write I2C password for test mode. //
+	//////		Write_Word(g_TM_EN, g_TestMode_Enter, NObin, HEX); // Write I2C key to get into test mode. //
+	//////		Write_Word(g_TM_ANA, g_SR_Enable, NObin, HEX);//Write I2C to enable SR Driver before entering scan mode
+	//////		Write_Word(g_TM_CTRL, g_ScanMode_Enter, NObin, HEX); // Write I2C key to get into scan mode. //
+	//////		Write_Byte(g_Watchdog_Timer, 0x00, NObin, HEX);
+	//////		delay(2);
+
+
+	//////		//	For Scan Chain Test here on..
+	//////		ddd_7->ddd_set_clock_period(0.5e-6);
+	//////		Close_relay(K17); // Connect FB to DDD_2.  Disconnect FB from ovi. //
+	//////		ovi_3->set_voltage(OVI_CHANNEL_7, 0.0, RANGE_5_V); // OVI_3_7 //
+	//////		Mux20_Open_relay(K64); // disconnect pullup. Let DDD drive SDA and SCL
+	//////		Close_relay(K26);	//SR to DDD-7-5
+	//////		tmu_6->open_relay(TMU_CHAN_A_DUT2);//disconnect TMU from SR pin
+	//////		Mux20_Close_relay(K65);//Disconnect SR from RDSON Buffer
+	//////		dvi_13->open_relay(CONN_FORCE1);
+	//////		dvi_13->open_relay(CONN_SENSE1);
+	//////		delay(4);
+
+
+
+	//////			
+
+	//////		int stop_scan = 0,
+	//////		start_scan = 102226;
+	//////		int count = 1;
+	//////		float test_start,
+	//////		  test_stop1; 
+	//////		test_start = mytimer.GetElapsedTime();
+	//////		//Total DDD memory = 128K. All patterns used upto 102225. I start scan from address 102226
+	//////		// thus I can load 128000 - 102226 = 25774 patterns at a time. I will load 25701 patterns 
+	//////		//at a time for simplicity. This will reach 1413555 patterns out of total 1436412 patterns...since 25701x55 = 1413555
+
+	//////		while(g_row_load<1413555)//will be run 55 times
+	//////		{
+	//////			stop_scan = start_scan + 25701 - 1;//Subtract one since below three lines include stop_scan as stop address
+	//////			
+	//////			if(stop_scan >=128000 || start_scan >= 128000)//cant go beyond DDD capacity.
+	//////				break;
+	//////		
+	//////			DDD_load_scan_pattern(start_scan, stop_scan);
+	//////			delay(1);
+	//////			ddd_7->ddd_run_pattern(start_scan, stop_scan);	
+	//////			delay(15);	
+	//////			DDD_Compare_Pattern(&g_Fail_address, start_scan, stop_scan);
+	//////			g_row_compare = g_row_load+1;//In event of mismatch - need to jog 'compare' to the address of 'load'.
+	//////			//Add a 1 so that DDD_Compare_Pattern only compares the middle pattern
+	//////			start_scan = 102226;//reset address
+	//////			cout << "Count" << " " << count << "  "<< g_Fail_address<< "  " << g_row_load <<endl;
+	//////			count++;
+	//////			if(g_Fail_address != 0) break;//Exit at first mismatch.
+	//////		}
+
+	//////		if(g_Fail_address == 0)//Only check further if no fails so far above..
+	//////		{
+	//////		start_scan = 102226;//reset
+	//////		//Now run the remaining patterns
+	//////		stop_scan = start_scan + 22857 - 1;//Subtract one since below three lines include stop_scan as stop address
+	//////		//& I only want to load even number of patterns at a time since I have doubled the designers patterns.
+	//////		DDD_load_scan_pattern(start_scan, stop_scan);
+	//////		delay(1);
+	//////		ddd_7->ddd_run_pattern(start_scan, stop_scan);
+	//////		delay(15);
+	//////		DDD_Compare_Pattern(&g_Fail_address, start_scan, stop_scan);
+	//////		g_row_compare = g_row_load;//In event of mismatch - need to jog 'compare' to the address of 'load'.
+	//////		}
+
+	//////		test_stop1 = mytimer.GetElapsedTime();
+	//////		test_stop1 = (test_stop1 - test_start) / 1e6;	
+	//////	}//End IF DSM
+	//////	else
+	//////	{
+	//////		//++++++++++++++++++++++++++++++++++++EeFu DSM code++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//	
+	//////		//SCL = DOUT1 (CLK)
+	//////		//FB  = DOUT3 (EN)
+	//////		//SDA = DOUT2 (INPUT)
+	//////		//SR  = DIN1  (O/P)
+	//////		
+	//////		//Connect SCL & SDA to DSM
+	//////		Mux20_Open_relay(K40);//Connect SCL to DOUT1 & SDA to DOUT2
+	//////		Mux20_Close_relay(K38);//Connect digital drivers to SCL and SDA
+	//////		Mux20_Close_relay(K39);//Disconnect OVI2 Ch1 from SCL
+	//////		Mux20_Close_relay(K37);//Disconnect OVI3 Ch0 from SDA
+	//////		Mux20_Close_relay(K64);//Connect 3.3V pull up to SDA and SCL
+	//////		delay(3);
+	//////		ovi_3->set_voltage(OVI_CHANNEL_7, g_I2C_Pullup, RANGE_5_V); // OVI_3_7 //
+	//////		ovi_3->set_current(OVI_CHANNEL_7, 30e-3, RANGE_30_MA); // OVI_3_7 //
+	//////		delay(1);
+
+	//////		//Connect FB (EN) to DSM
+	//////		Close_relay(K17);//Disconnect OVI_1_2 from FB pin
+	//////		Mux20_Close_relay(K62);//Connect to DOUT3
+	//////		Open_relay(K71);//Make sure path is not shared with CV Tune.
+
+	//////		//Connect SR(O/P) to DSM
+	//////		Mux20_Close_relay(K63);//SR to DIN1
+	//////		Close_relay(K26);	//SR to DIN1
+
+	//////		delay(5);
+
+	//////		// Float SR pin dvi //
+	//////		SR_dvi2k->set_current(SR_ch, 0.1e-9, RANGE_20_UA); // DVI_13_1, dvi2k, float //
+	//////		wait.delay_10_us(10);
+
+	//////	
+	//////		//++++++++++++++++++++++++++++++++++++DSM V2 SW 092517++++++++++++++++++++++++++++++++++++++++++++++++++//
+	//////		while((TM_Enter_Failed == 1) && (count < 3))
+	//////		{
+	//////			 ret = DSM_enable_outputs(DSM_CONTEXT, NONE_CH);       //Disable DOUT outputs so that I2C is in control
+
+	//////			 writeDataBuffer[0] = 0x26;
+	//////			 writeDataBuffer[1] = 0x00;                                              
+	//////			 ret = DSM_write_I2C_buffer(DSM_CONTEXT, devAddr,2,writeDataBuffer);  // Disable watchdog timer
+	//////			 WatchDog_error = ret;
+	//////			
+	//////			 memset(writeDataBuffer,0x00,sizeof(writeDataBuffer));
+
+	//////			 writeDataBuffer[0] = 0x5E;
+	//////			 writeDataBuffer[1] = 0x16;
+	//////			 writeDataBuffer[2] = 0x20;   
+	//////			 ret = DSM_write_I2C_buffer(DSM_CONTEXT, devAddr,3,writeDataBuffer);  // Testmode password
+	//////			 TM_PW_error = ret;
+
+	//////			 memset(writeDataBuffer,0x00,sizeof(writeDataBuffer));
+	//////			 writeDataBuffer[0] = 0x5E;
+	//////			 writeDataBuffer[1] = 0x34;
+	//////			 writeDataBuffer[2] = 0x12;   
+	//////			 ret = DSM_write_I2C_buffer(DSM_CONTEXT, devAddr,3,writeDataBuffer);  // Enter Testmode
+	//////			 TM_Enter_error = ret;
+
+
+	//////			 memset(writeDataBuffer,0x00,sizeof(writeDataBuffer));
+	//////			 writeDataBuffer[0] = 0xD6;
+	//////			 writeDataBuffer[1] = 0x00;
+	//////			 writeDataBuffer[2] = 0x04; 
+	//////			 ret = DSM_write_I2C_buffer(DSM_CONTEXT, devAddr,3,writeDataBuffer);// SR Enable
+	//////			 SR_Enable_error = ret;
+
+	//////			 memset(writeDataBuffer,0x00,sizeof(writeDataBuffer));
+	//////			 writeDataBuffer[0] = 0xD0;
+	//////			 writeDataBuffer[1] = 0x00;
+	//////			 writeDataBuffer[2] = 0x80;  
+	//////			 ret = DSM_write_I2C_buffer(DSM_CONTEXT, devAddr,3,writeDataBuffer);// Enable Scan
+	//////			 Scan_Enable_error = ret;
+
+	//////			 wait.delay_10_us(30);
+	//////			 if (ret != 0)//error
+	//////			 {
+	//////				 TM_Enter_Failed = 1;
+
+	//////			 }else TM_Enter_Failed = 0;
+	//////			 count++;
+	//////		}
+	//////		ret = DSM_enable_outputs(DSM_CONTEXT, ALL_CH); // enable DOUT1 through DOUT4
+	//////		ret = DSM_run_pattern(DSM_CONTEXT, ScanChain_AddrStart, (ScanChain_AddrEnd));
+	//////		g_Fail_address = ret;
+	//////		if (ret == 0)
+	//////		{
+	//////						printf("\nScan passed!");
+	//////		}
+	//////		else
+	//////		{
+	//////						printf("\nScan error at vector:%08d", ret);
+	//////						g_Fail_address = ret;//
+
+	//////		}
+	//////		//+++++++++++++++++++++++++++++++++END DSM V2 SW 092517++++++++++++++++++++++++++++++++++++++++++++++++++//
+	//////	}
+
+	//////	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+	//////	// Powerdown //
+	//////	BC_ovi->set_voltage(BC_ch, 0.0, RANGE_10_V); // OVI_1_3 //
+	//////	Mux20_Open_relay(K64);
+	//////	ovi_3->set_voltage(OVI_CHANNEL_7, 0.0, RANGE_5_V); // OVI_3_7 //
+	//////	Mux20_Open_relay(K37);
+	//////	Mux20_Open_relay(K38);
+	//////	Mux20_Open_relay(K40);
+	//////	Mux20_Open_relay(K39);
+	//////	Open_relay(K17); 
+	//////	Mux20_Open_relay(K62);//Disconnect FB from DOUT3
+	//////	Open_relay(K26);	//SR from DDD-7-5
+	//////	Mux20_Open_relay(K63);//SR from DIN1
+	//////	Mux20_Open_relay(K65);
+	//////	Open_relay(K2);
+	//////	Open_relay(K18);
+	//////	VO_dvi->set_voltage(VO_ch, 0, VOLT_10_RANGE);
+	//////	uVCC_ovi->set_current(uVCC_ch, 30e-3, RANGE_30_MA); // OVI_3_2 //
+	//////	uVCCrampDown(2, 0, 0.1);
+	//////	SR_dvi2k->set_voltage(SR_ch, 5, VOLT_10_RANGE); // DVI_13_1, dvi2k, prevent undershoot //
+	//////	SR_dvi2k->set_current(SR_ch, 20.0e-3, RANGE_20_MA); // DVI_13_1, dvi2k //
+	//////	wait.delay_10_us(45); // prevent SR undershoot //
+	//////	FB_ovi->connect(2);
+	//////	FW_dvi->set_voltage(FW_ch, 0, VOLT_2_RANGE); // DVI_11_1 //
+	//////	BPS_dvi->set_current(BPS_ch, 300e-3, RANGE_300_MA); // DVI_9_1 //
+	//////	BPS_dvi->set_voltage(BPS_ch, 0, VOLT_10_RANGE); // DVI_9_1 //
+	//////	wait.delay_10_us(5);
+	//////	SR_dvi2k->set_voltage(SR_ch, 0.0, VOLT_10_RANGE); // DVI_13_1, dvi2k //
+	//////	VBD_dvi->set_voltage(VBD_ch, 4, VOLT_5_RANGE); // DVI_21_0, prevent undershoot //
+	//////	VBD_dvi->set_current(VBD_ch, 30e-3, RANGE_30_MA); // DVI_21_0 //
+	//////	wait.delay_10_us(20);
+	//////	VBD_dvi->set_voltage(VBD_ch, 0, VOLT_5_RANGE); // DVI_21_0 //
+	//////	ddd_7->ddd_set_clock_period(Dclk_period);
+	//////	ddd_7->ddd_set_voltage_ref(DDD_Vref);
+	//////	wait.delay_10_us(g_DDDwait);
+	//////	ddd_7->ddd_set_lo_level(0.0); // Will immediately change to this level upon execution 
+	//////	ddd_7->ddd_set_hi_level(4.0); // Will immediately change to this level upon execution
+	//////	wait.delay_10_us(200); // Wait for relays //
+	//////	
+	//////	// reset for next device
+	//////	g_row_load = 0;//reset for next device
+	//////	g_row_compare = 0;//reset for next device
+
+	//////	// If fail address 3328, 3329 can ignore these failures(per design: Xiang and Johnny 6/13/2018).
+	//////	// Had initially only ignored 3328, even though 3329 also had a problem, but it was smaller percent. //
+	//////	if (g_Fail_address == 3328 || g_Fail_address == 3329)
+	//////	{
+	//////		g_Fail_address = 0;
+	//////	}
+
+	//////	// Set DSM clock frequency //
+	//////	DSM_set_vector_clock_freq(DSM_CONTEXT, 1200); // Freq in kHZ, 1200/4 = 300kHz clock frequency //  // Add I2C DSM //
+
+	//////	// Datalog //
+	//////	PiDatalog(func, A_ScanChain, g_Fail_address, 23, POWER_UNIT);
+
+	//////	// Check any test failed //
+	//////	if (PiGetAnyFailStatus())		
+	//////	{
+	//////		g_PartFailed = 1;
+	//////	}
+	//////	
+	//////	// Test Time End //
+	//////	if (g_p_TstTime_Enble)
+	//////	{
+	//////		g_endtime = g_mytimer.GetElapsedTime();
+	//////		ScanChain_TT = (g_endtime - g_begintime)*1e-6;
+	//////		PiDatalog(func, A_ScanChain_TT, ScanChain_TT, 23, POWER_MILLI);
+	//////	}
+
+	//////}
+}
